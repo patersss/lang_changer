@@ -15,7 +15,7 @@ public class CapsLockHook implements NativeKeyListener {
     public void nativeKeyPressed(NativeKeyEvent nativeEvent) {
         if (nativeEvent.getKeyCode() == NativeKeyEvent.VC_CAPS_LOCK) {
             long now = System.currentTimeMillis();
-            if (now - lastTrigger < 300) {
+            if (now - lastTrigger < 200) {
                 logger.info("Repetitive caps lock trigger. Time passed: " + (now - lastTrigger));
                 return;
             }
