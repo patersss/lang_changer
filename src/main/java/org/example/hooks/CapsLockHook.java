@@ -10,20 +10,6 @@ import java.util.logging.Logger;
 public class CapsLockHook implements NativeKeyListener {
     private final Logger logger = Logger.getLogger(CapsLockHook.class.getName());
     private long lastTrigger = 0;
-//    @Override
-//    public void nativeKeyReleased(NativeKeyEvent nativeEvent) {
-//        if (nativeEvent.getKeyCode() == NativeKeyEvent.VC_CAPS_LOCK) {
-//            long now = System.currentTimeMillis();
-//            if (now - lastTrigger < 150) {
-//                logger.info("Repetitive caps lock trigger. Less then 150 microseconds passed.");
-//                return;
-//            }
-//            lastTrigger = now;
-//            logger.info("Caps lock was released");
-//            LangManager.changeLang();
-//            CapsManager.forceOffDelayed();
-//        }
-//    }
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent nativeEvent) {
@@ -36,7 +22,7 @@ public class CapsLockHook implements NativeKeyListener {
             lastTrigger = now;
             logger.info("Caps lock was pressed. Change lang");
             try {
-                LangManager.changeLang();
+                LangManager.changeLangTest();
                 CapsManager.forceOffDelayed();
 
             } catch (Exception e) {

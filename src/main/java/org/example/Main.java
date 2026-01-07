@@ -134,7 +134,6 @@ public class Main {
 
         // Включаем сглаживание
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
         // Рисуем синий круг
         g.setColor(new Color(0, 120, 215)); // Windows blue
         g.fillOval(0, 0, size, size);

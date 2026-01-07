@@ -5,51 +5,40 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HKL;
 import org.example.jna.User32Ex;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class LangManager {
     private static final Logger logger = Logger.getLogger(LangManager.class.getName());
+
     private static final User32 user32 = User32.INSTANCE;
     private static final User32Ex user32Ex = User32Ex.INSTANCE;
-    private static final int KLF_ACTIVATE = 0x00000001;
+    private static final int WM_INPUTLANGCHANGEREQUEST = 0x0050;
+    private static final long HKL_EN = 0x04090409L;
+    private static final long HKL_RU = 0x04190419L;
 
-    public static void changeLang() {
-        try {
-            HKL[] layouts = new HKL[10];
-            int countOfLangs = user32.GetKeyboardLayoutList(layouts.length, layouts);
-            Arrays.stream(layouts).forEach(System.out::println);
-            if (countOfLangs == 0) {
-                logger.warning("Does not find any keyboard layouts!");
-                return;
-            }
-
-            WinDef.HWND foregroundWindow = user32.GetForegroundWindow();
-            int threadId = user32.GetWindowThreadProcessId(foregroundWindow, null);
-            HKL current = user32.GetKeyboardLayout(threadId);
-
-            logger.info("Current layout: " + formatHKL(current));
-            logger.info("Total layouts: " + countOfLangs);
-
-
-            logger.info("Get current lang: " + current);
-            for (int i = 0; i < countOfLangs; i++) {
-                if (layouts[i].equals(current)) {
-                    HKL next = layouts[(i + 1) % countOfLangs];
-                    user32Ex.ActivateKeyboardLayout(next, KLF_ACTIVATE);
-                    logger.info("Change layout to: " + next.toString());
-                    return;
-                }
-            }
-
-            logger.warning("Current layout was not found. Set the first available");
-            user32Ex.ActivateKeyboardLayout(layouts[0], KLF_ACTIVATE);
-        } catch (Exception e) {
-            logger.severe("Error while changing language: " + e.getMessage());
+    public static void changeLangTest() {
+        logger.info("Changing lang...");
+        WinDef.HWND hwnd = user32.GetForegroundWindow();
+        if (hwnd == null) {
+            logger.warning("Foreground windows is null");
+            return;
         }
-    }
 
-    private static String formatHKL(HKL hkl) {
-        return String.format("0x%08X", hkl.hashCode());
+        int threadId = user32.GetWindowThreadProcessId(hwnd, null);
+        HKL current = user32.GetKeyboardLayout(threadId);
+
+        long currentVal = current.hashCode() & 0xFFFFFFFFL;
+
+        long nextVal = (currentVal == HKL_EN) ? HKL_RU : HKL_EN;
+        logger.info("Setting lang to " + nextVal);
+
+        user32Ex.PostMessage(
+                hwnd,
+                WM_INPUTLANGCHANGEREQUEST,
+                new WinDef.WPARAM(0),
+                new WinDef.LPARAM(nextVal)
+        );
+
+        logger.info("Requested layout switch: 0x" + Long.toHexString(nextVal));
     }
 }
