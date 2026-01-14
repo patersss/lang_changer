@@ -1,9 +1,9 @@
-package org.example.hooks;
+package org.chel.hooks;
 
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-import org.example.managers.CapsManager;
-import org.example.managers.LangManager;
+import org.chel.managers.CapsManager;
+import org.chel.managers.LangManager;
 
 import java.util.logging.Logger;
 

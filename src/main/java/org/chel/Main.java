@@ -1,8 +1,9 @@
-package org.example;
+package org.chel;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
-import org.example.hooks.CapsLockHook;
+import org.chel.hooks.CapsLockHook;
+import org.chel.managers.CapsManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +29,7 @@ public class Main {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
                     GlobalScreen.unregisterNativeHook();
+                    CapsManager.shutdown();
                     logger.info("Delete hook for caps lock");
                 } catch (NativeHookException ex) {
                     logger.severe("Error while deleting hook for caps lock: " + ex.getMessage());
@@ -57,7 +59,7 @@ public class Main {
             TrayIcon trayIcon = getTrayIcon(icon);
 
             // Двойной клик по иконке - показать информацию
-            trayIcon.addActionListener(e -> {
+            trayIcon.addActionListener(_ -> {
                 JOptionPane.showMessageDialog(null,
                         "Приложение работает в фоновом режиме.\n\n" +
                                 "Нажмите Caps Lock для переключения языка.",
@@ -67,14 +69,6 @@ public class Main {
 
             // Добавляем иконку в трей
             tray.add(trayIcon);
-
-            // Показываем уведомление при запуске
-            trayIcon.displayMessage(
-                    "Caps Lock Switcher",
-                    "Приложение запущено. Нажмите Caps Lock для переключения языка.",
-                    TrayIcon.MessageType.INFO
-            );
-
             logger.info("Системный трей настроен");
 
         } catch (AWTException e) {

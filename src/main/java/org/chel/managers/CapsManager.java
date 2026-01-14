@@ -1,11 +1,10 @@
-package org.example.managers;
+package org.chel.managers;
 
 import com.sun.jna.platform.win32.BaseTSD;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
-import org.example.jna.User32Ex;
+import org.chel.jna.User32Ex;
 
-import java.awt.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -68,9 +67,7 @@ public class CapsManager {
                 } else {
                     logger.info("Caps Lock is already OFF, nothing to do");
                 }
-
                 logger.info("=== Caps Lock procedure complete ===");
-
             } catch (InterruptedException e) {
                 logger.warning("Sleep interrupted: " + e.getMessage());
                 Thread.currentThread().interrupt();

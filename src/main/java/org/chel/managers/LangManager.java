@@ -1,16 +1,14 @@
-package org.example.managers;
+package org.chel.managers;
 
-import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HKL;
-import org.example.jna.User32Ex;
+import org.chel.jna.User32Ex;
 
 import java.util.logging.Logger;
 
 public class LangManager {
     private static final Logger logger = Logger.getLogger(LangManager.class.getName());
 
-    private static final User32 user32 = User32.INSTANCE;
     private static final User32Ex user32Ex = User32Ex.INSTANCE;
     private static final int WM_INPUTLANGCHANGEREQUEST = 0x0050;
     private static final long HKL_EN = 0x04090409L;
@@ -18,17 +16,16 @@ public class LangManager {
 
     public static void changeLangTest() {
         logger.info("Changing lang...");
-        WinDef.HWND hwnd = user32.GetForegroundWindow();
+        WinDef.HWND hwnd = user32Ex.GetForegroundWindow();
         if (hwnd == null) {
             logger.warning("Foreground windows is null");
             return;
         }
 
-        int threadId = user32.GetWindowThreadProcessId(hwnd, null);
-        HKL current = user32.GetKeyboardLayout(threadId);
+        int threadId = user32Ex.GetWindowThreadProcessId(hwnd, null);
+        HKL current = user32Ex.GetKeyboardLayout(threadId);
 
         long currentVal = current.hashCode() & 0xFFFFFFFFL;
-
         long nextVal = (currentVal == HKL_EN) ? HKL_RU : HKL_EN;
         logger.info("Setting lang to " + nextVal);
 
