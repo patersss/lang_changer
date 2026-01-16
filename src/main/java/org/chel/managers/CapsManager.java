@@ -3,6 +3,7 @@ package org.chel.managers;
 import com.sun.jna.platform.win32.BaseTSD;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
 import org.chel.jna.User32Ex;
 
 import java.util.concurrent.Executors;
@@ -19,8 +20,8 @@ public class CapsManager {
         thread.setDaemon(true);
         return thread;
     });
-    private static final User32Ex user32 = User32Ex.INSTANCE;
     private static final int VK_CAPITAL = 0x14;
+    private static final User32Ex user32 = User32Ex.INSTANCE;
 
     public static boolean isCapsLockOn() {
         // GetKeyState возвращает short, где младший бит = состояние toggle
