@@ -3,7 +3,6 @@ package org.chel.managers;
 import com.sun.jna.platform.win32.BaseTSD;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinUser;
 import org.chel.jna.User32Ex;
 
 import java.util.concurrent.Executors;

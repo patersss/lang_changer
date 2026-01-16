@@ -2,6 +2,7 @@ package org.chel.ui;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
+import org.chel.managers.CapsManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,20 +54,13 @@ public class ProgramUI {
     private TrayIcon getTrayIcon(Image icon) {
         PopupMenu popup = new PopupMenu();
 
-        // Пункт меню: Статус
-        MenuItem statusItem = new MenuItem("🟢 Работает");
-        statusItem.setEnabled(false); // Неактивный пункт для показа статуса
-        popup.add(statusItem);
-
-        popup.addSeparator();
-
         // Пункт меню: О программе
         MenuItem aboutItem = new MenuItem("О программе");
         aboutItem.addActionListener(e -> {
             JOptionPane.showMessageDialog(null,
-                    "Caps Lock Language Switcher\n\n" +
+                    "Capsyyyy. Программа для смены языка и не только(в будущем)\n\n" +
                             "Нажмите Caps Lock для переключения языка.\n" +
-                            "Caps Lock автоматически отключается.",
+                            "Caps Lock автоматически отключается(практически сразу и практически без багов).",
                     "О программе",
                     JOptionPane.INFORMATION_MESSAGE);
         });
@@ -78,6 +72,7 @@ public class ProgramUI {
             logger.info("Выход из приложения...");
             try {
                 GlobalScreen.unregisterNativeHook();
+                CapsManager.shutdown();
             } catch (NativeHookException ex) {
                 logger.warning("Ошибка при отключении hook: " + ex.getMessage());
             }
