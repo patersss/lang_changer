@@ -22,7 +22,7 @@ public class CapsLockHook implements NativeKeyListener {
             lastTrigger = now;
             logger.info("Caps lock was pressed. Change lang");
             try {
-                LangManager.changeLangTest();
+                LangManager.changeLanguage();
                 CapsManager.forceOffDelayed();
 
             } catch (Exception e) {
