@@ -1,0 +1,13 @@
+stages:
+  - build
+  - publish
+
+build_exe_for_windows:
+  stage: build
+  tags:
+    - saas-windows-medium-amd64
+
+  script:
+    - echo "test windows runner"
+    - Get-ComputerInfo | Select-Object OsName
+
