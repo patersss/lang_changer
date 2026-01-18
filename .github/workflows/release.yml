@@ -45,7 +45,16 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           $tag = "${{ github.ref_name }}"          
-          $ver = $tag -replace '^v',''             
+          $ver = $tag -replace '^v',''
+          $refType = "${{ github.ref_type }}"   # "tag" или "branch"
+          $refName = "${{ github.ref_name }}"   # "v1.0.0" или "main"
+          
+          if ($refType -eq "tag") { `
+          $ver = ($refName -replace '^v','') `
+          } else { `
+            $ver = "1.0.0" `
+          }
+          
           jpackage --type $env:JPACKAGE_TYPE `
             --name $env:APP_NAME `
             --app-version $ver `
