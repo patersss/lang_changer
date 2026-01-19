@@ -2,8 +2,8 @@ name: Build exe for windows and add to release page
 
 on:
   push:
-#    tags:
-#      - "v*"
+    tags:
+      - "v*"
 
 permissions:
   contents: write
