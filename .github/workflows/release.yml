@@ -2,8 +2,8 @@ name: Build exe for windows and add to release page
 
 on:
   push:
-    tags:
-      - "v*"
+#    tags:
+#      - "v*"
 
 permissions:
   contents: write
@@ -14,6 +14,7 @@ jobs:
 
     env:
       APP_NAME: Capsy
+      JAR_NAME: change_lang
       MAIN_CLASS: org.chel.Main
       JPACKAGE_TYPE: exe
       JAVA_TOOL_OPTIONS: --enable-native-access=ALL-UNNAMED
@@ -59,7 +60,7 @@ jobs:
             --name $env:APP_NAME `
             --app-version $ver `
             --input target `
-            --main-jar "$env:APP_NAME.jar" `
+            --main-jar "$env:JAR_NAME.jar" `
             --main-class $env:MAIN_CLASS `
             --dest dist `
             --win-menu --win-shortcut --win-per-user-install `
