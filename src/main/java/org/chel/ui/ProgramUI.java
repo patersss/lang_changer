@@ -17,6 +17,8 @@ public class ProgramUI {
     }
 
     private void setupSystemTray() {
+        setAppLookAndFeel();
+
         // Проверяем, поддерживается ли SystemTray
         if (!SystemTray.isSupported()) {
             logger.warning("SystemTray не поддерживается");
@@ -109,5 +111,25 @@ public class ProgramUI {
 
         g.dispose();
         return image;
+    }
+
+    private void setAppLookAndFeel() {
+        String[] lookAndFeelCandidates = {
+                UIManager.getSystemLookAndFeelClassName(),
+                UIManager.getCrossPlatformLookAndFeelClassName()
+        };
+
+        for (String candidate : lookAndFeelCandidates) if (tryLookAndFeel(candidate)) return;
+    }
+
+    private boolean tryLookAndFeel(String classname) {
+        try {
+            UIManager.setLookAndFeel(classname);
+            return true;
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+                 IllegalAccessException e) {
+            logger.severe("Error while setting look and feel: classname - " + classname);
+            return false;
+        }
     }
 }
