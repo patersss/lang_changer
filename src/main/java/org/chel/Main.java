@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import org.chel.hooks.CapsLockHook;
 import org.chel.managers.CapsManager;
 import org.chel.ui.ProgramUI;
+import org.chel.ui.SingleInstanceLock;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     static void main() {
-
+        new SingleInstanceLock().ensureSingleInstanceOrExit();
         try {
             Logger jNativeLogger = Logger.getLogger(GlobalScreen.class.getPackageName());
             jNativeLogger.setLevel(Level.WARNING);
