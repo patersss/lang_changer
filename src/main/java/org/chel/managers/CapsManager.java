@@ -22,7 +22,7 @@ public class CapsManager {
     private static final int VK_CAPITAL = 0x14;
     private static final User32Ex user32 = User32Ex.INSTANCE;
 
-    public static boolean isCapsLockOn() {
+    private static boolean isCapsLockOn() {
         // GetKeyState возвращает short, где младший бит = состояние toggle
         // Если младший бит = 1, то Caps Lock включен
         short state = user32.GetKeyState(VK_CAPITAL);

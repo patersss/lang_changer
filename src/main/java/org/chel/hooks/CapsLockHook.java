@@ -13,22 +13,33 @@ public class CapsLockHook implements NativeKeyListener {
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent nativeEvent) {
-        if (nativeEvent.getKeyCode() == NativeKeyEvent.VC_CAPS_LOCK) {
-            long now = System.currentTimeMillis();
-            if (now - lastTrigger < 200) {
-                logger.info("Repetitive caps lock trigger. Time passed: " + (now - lastTrigger));
-                return;
-            }
-            lastTrigger = now;
-            logger.info("Caps lock was pressed. Change lang");
-            try {
-                LangManager.changeLanguage();
-                CapsManager.forceOffDelayed();
+        if (nativeEvent.getKeyCode() != NativeKeyEvent.VC_CAPS_LOCK) {
+            return;
+        }
+        logger.info("Caps lock was pressed. Change lang");
 
-            } catch (Exception e) {
-                logger.severe("Error while handling caps lock: " + e.getMessage());
-                e.printStackTrace();
-            }
+        boolean shiftModifier = (nativeEvent.getModifiers() & NativeKeyEvent.SHIFT_MASK) != 0;
+        logger.info("Checking if shift is on. Status is " + shiftModifier);
+
+        if (shiftModifier) {
+            logger.info("Caps+shift detected, keep default behaviour");
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (now - lastTrigger < 200) {
+            logger.info("Repetitive caps lock trigger. Time passed: " + (now - lastTrigger));
+            return;
+        }
+
+        lastTrigger = now;
+        try {
+            LangManager.changeLanguage();
+            CapsManager.forceOffDelayed();
+
+        } catch (Exception e) {
+            logger.severe("Error while handling caps lock: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

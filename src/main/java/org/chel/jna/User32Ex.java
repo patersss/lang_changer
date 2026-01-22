@@ -17,19 +17,4 @@ public interface User32Ex extends StdCallLibrary {
     // get state of caps lock
     short GetKeyState(int nVirtKey);
 
-    // get async state of caps lock
-    short GetAsyncKeyState(int nVirtKey);
-
-    boolean PostMessage(
-            WinDef.HWND hWnd,
-            int msg,
-            WinDef.WPARAM wParam,
-            WinDef.LPARAM lParam
-    );
-
-    int GetWindowThreadProcessId(WinDef.HWND hwnd, IntByReference intByReference);
-
-    HKL GetKeyboardLayout(int i);
-
-    WinDef.HWND GetForegroundWindow();
 }
