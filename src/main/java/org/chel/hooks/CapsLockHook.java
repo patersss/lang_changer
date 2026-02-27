@@ -12,7 +12,7 @@ public class CapsLockHook implements NativeKeyListener {
     private long lastTrigger = 0;
 
     @Override
-    public void nativeKeyPressed(NativeKeyEvent nativeEvent) {
+    public void nativeKeyReleased(NativeKeyEvent nativeEvent) {
         if (nativeEvent.getKeyCode() != NativeKeyEvent.VC_CAPS_LOCK) {
             return;
         }
