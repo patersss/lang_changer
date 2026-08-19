@@ -1,8 +1,6 @@
 package org.chel.ui;
 
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
-import org.chel.managers.CapsManager;
+import org.chel.core.Lifecycle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,40 +10,33 @@ import java.util.logging.Logger;
 public class ProgramUI {
     private static final Logger logger = Logger.getLogger(ProgramUI.class.getName());
 
-    public ProgramUI() {
+    private final Lifecycle lifecycle;
+
+    public ProgramUI(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
         setupSystemTray();
     }
 
     private void setupSystemTray() {
         setAppLookAndFeel();
 
-        // Проверяем, поддерживается ли SystemTray
         if (!SystemTray.isSupported()) {
             logger.warning("SystemTray не поддерживается");
             return;
         }
 
         try {
-            // Получаем системный трей
             SystemTray tray = SystemTray.getSystemTray();
+            TrayIcon trayIcon = getTrayIcon(createTrayIcon());
 
-            // Создаем иконку (простая иконка 16x16)
-            Image icon = createTrayIcon();
+            trayIcon.addActionListener(_ -> JOptionPane.showMessageDialog(null,
+                    "Приложение работает в фоновом режиме.\n\n" +
+                            "Нажмите Caps Lock для переключения языка.",
+                    "Caps Lock Switcher",
+                    JOptionPane.INFORMATION_MESSAGE));
 
-            // Создаем popup menu
-            TrayIcon trayIcon = getTrayIcon(icon);
-
-            // Двойной клик по иконке - показать информацию
-            trayIcon.addActionListener(_ -> {
-                JOptionPane.showMessageDialog(null,
-                        "Приложение работает в фоновом режиме.\n\n" +
-                                "Нажмите Caps Lock для переключения языка.",
-                        "Caps Lock Switcher",
-                        JOptionPane.INFORMATION_MESSAGE);
-            });
-
-            // Добавляем иконку в трей
             tray.add(trayIcon);
+            lifecycle.register("system tray icon", () -> tray.remove(trayIcon));
             logger.info("Системный трей настроен");
 
         } catch (AWTException e) {
@@ -56,51 +47,37 @@ public class ProgramUI {
     private TrayIcon getTrayIcon(Image icon) {
         PopupMenu popup = new PopupMenu();
 
-        // Пункт меню: О программе
         MenuItem aboutItem = new MenuItem("О программе");
-        aboutItem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null,
-                    "Capsyyyy. Программа для смены языка и не только(в будущем)\n\n" +
-                            "Нажмите Caps Lock для переключения языка.\n" +
-                            "Caps Lock автоматически отключается(практически сразу и практически без багов).",
-                    "О программе",
-                    JOptionPane.INFORMATION_MESSAGE);
-        });
+        aboutItem.addActionListener(_ -> JOptionPane.showMessageDialog(null,
+                "Capsyyyy. Программа для смены языка и не только(в будущем)\n\n" +
+                        "Нажмите Caps Lock для переключения языка.\n" +
+                        "Caps Lock автоматически отключается(практически сразу и практически без багов).",
+                "О программе",
+                JOptionPane.INFORMATION_MESSAGE));
         popup.add(aboutItem);
 
-        // Пункт меню: Выход
         MenuItem exitItem = new MenuItem("Выход");
-        exitItem.addActionListener(e -> {
+        // всю очистку делает Lifecycle через shutdown hook — здесь только выход
+        exitItem.addActionListener(_ -> {
             logger.info("Выход из приложения...");
-            try {
-                GlobalScreen.unregisterNativeHook();
-                CapsManager.shutdown();
-            } catch (NativeHookException ex) {
-                logger.warning("Ошибка при отключении hook: " + ex.getMessage());
-            }
             System.exit(0);
         });
         popup.add(exitItem);
 
-        // Создаем TrayIcon
         TrayIcon trayIcon = new TrayIcon(icon, "Caps Lock Language Switcher", popup);
-        trayIcon.setImageAutoSize(true); // Автоматический размер иконки
+        trayIcon.setImageAutoSize(true);
         return trayIcon;
     }
 
     private Image createTrayIcon() {
-        // Создаем простую иконку 16x16 с буквой "C"
         int size = 16;
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
 
-        // Включаем сглаживание
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        // Рисуем синий круг
-        g.setColor(new Color(0, 120, 215)); // Windows blue
+        g.setColor(new Color(0, 120, 215));
         g.fillOval(0, 0, size, size);
 
-        // Рисуем белую букву "C"
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 12));
         FontMetrics fm = g.getFontMetrics();
