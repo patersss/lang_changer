@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Подменяет нативные вызовы user32: запоминает отправленные комбинации
- * и позволяет задать состояние Caps Lock и результат SendInput.
+ * Подменяет SendInput: запоминает отправленные комбинации и позволяет
+ * задать, сколько событий «примет» система.
  */
 class FakeWin32Keyboard implements Win32Keyboard {
     private final List<List<Integer>> sentCombos = new ArrayList<>();
-    private final List<Boolean> toggleStates = new ArrayList<>();
 
-    /** сколько событий «примет» система: null — принять все */
     private Integer forcedSentCount;
     private RuntimeException failure;
-    private int toggleReadIndex = 0;
-    private boolean toggleOn = false;
+    private Runnable onSend = () -> {
+    };
 
     List<List<Integer>> sentCombos() {
         return sentCombos;
@@ -29,29 +27,18 @@ class FakeWin32Keyboard implements Win32Keyboard {
         this.forcedSentCount = eventCount;
     }
 
-    void setToggleOn(boolean on) {
-        this.toggleOn = on;
-    }
-
-    /** Задаёт последовательность ответов isToggleOn: по одному на каждый вызов. */
-    void scriptToggleStates(Boolean... states) {
-        toggleStates.addAll(List.of(states));
+    /** позволяет фейковой раскладке «отреагировать» на отправку комбинации */
+    void onSend(Runnable onSend) {
+        this.onSend = onSend;
     }
 
     @Override
     public int sendKeyCombo(List<Integer> virtualKeys) {
         sentCombos.add(List.copyOf(virtualKeys));
+        onSend.run();
         if (failure != null) {
             throw failure;
         }
         return forcedSentCount != null ? forcedSentCount : virtualKeys.size() * 2;
-    }
-
-    @Override
-    public boolean isToggleOn(int virtualKey) {
-        if (toggleReadIndex < toggleStates.size()) {
-            return toggleStates.get(toggleReadIndex++);
-        }
-        return toggleOn;
     }
 }

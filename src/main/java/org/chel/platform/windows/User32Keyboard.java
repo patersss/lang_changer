@@ -5,7 +5,6 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.WORD;
 import com.sun.jna.platform.win32.WinUser;
-import org.chel.platform.windows.jna.User32Ex;
 
 import java.util.List;
 
@@ -22,11 +21,6 @@ public final class User32Keyboard implements Win32Keyboard {
         WinUser.INPUT[] inputs = buildInputs(virtualKeys);
         DWORD sent = User32.INSTANCE.SendInput(new DWORD(inputs.length), inputs, inputs[0].size());
         return sent.intValue();
-    }
-
-    @Override
-    public boolean isToggleOn(int virtualKey) {
-        return (User32Ex.Holder.INSTANCE.GetKeyState(virtualKey) & 1) != 0;
     }
 
     private static WinUser.INPUT[] buildInputs(List<Integer> virtualKeys) {

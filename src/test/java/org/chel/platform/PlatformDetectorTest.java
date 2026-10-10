@@ -13,7 +13,7 @@ class PlatformDetectorTest {
     private record StubPlatform(String name, boolean isAvailable) implements PlatformSupport {
         @Override
         public AppContext createContext() {
-            return new AppContext(name, () -> true, null, null);
+            return new AppContext(name, () -> true, null, null, false);
         }
     }
 

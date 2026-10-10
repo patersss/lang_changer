@@ -1,17 +1,16 @@
 package org.chel;
 
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
 import org.chel.core.AppContext;
+import org.chel.core.KeyboardHook;
 import org.chel.core.Lifecycle;
-import org.chel.core.SchedulerDelayedRunner;
-import org.chel.hooks.CapsLockHook;
+import org.chel.hooks.CapsLockHandler;
 import org.chel.platform.PlatformDetector;
 import org.chel.platform.PlatformSupport;
 import org.chel.ui.ProgramUI;
 import org.chel.ui.SingleInstanceLock;
 
-import java.util.logging.Level;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class Main {
@@ -34,25 +33,26 @@ public class Main {
         AppContext context = platform.createContext();
         new SingleInstanceLock(context.appPaths()).ensureSingleInstanceOrExit(lifecycle);
 
-        SchedulerDelayedRunner delayedRunner = new SchedulerDelayedRunner("Caps-Manager");
-        lifecycle.register("delayed runner", delayedRunner::close);
-
-        try {
-            Logger.getLogger(GlobalScreen.class.getPackageName()).setLevel(Level.WARNING);
-
-            GlobalScreen.registerNativeHook();
-            lifecycle.register("native hook", GlobalScreen::unregisterNativeHook);
-
-            GlobalScreen.addNativeKeyListener(new CapsLockHook(
-                    context.layoutSwitcher(),
-                    context.capsLockController(),
-                    delayedRunner));
-            logger.info("Хук на Caps Lock установлен");
-
-            new ProgramUI(lifecycle);
-        } catch (NativeHookException e) {
-            logger.severe("Не удалось установить хук на Caps Lock: " + e.getMessage());
-            System.exit(1);
+        if (context.hasFullPrivileges()) {
+            logger.info("Процесс запущен с повышенными правами: работает и поверх окон администратора");
+        } else {
+            logger.warning("Процесс запущен без повышения прав. Поверх окон с правами администратора " +
+                    "(консоль от админа, диспетчер задач, диалоги UAC) переключение работать не будет — " +
+                    "так устроен UIPI. См. readme, раздел про запуск с правами администратора.");
         }
+
+        // смена раскладки уходит сюда, чтобы колбэк хука возвращался мгновенно
+        ExecutorService worker = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "Layout-Switch");
+            thread.setDaemon(true);
+            return thread;
+        });
+        lifecycle.register("layout worker", worker::close);
+
+        KeyboardHook hook = context.keyboardHook();
+        lifecycle.register("keyboard hook", hook::close);
+        hook.start(new CapsLockHandler(context.layoutSwitcher(), worker));
+
+        new ProgramUI(lifecycle, context.hasFullPrivileges());
     }
 }

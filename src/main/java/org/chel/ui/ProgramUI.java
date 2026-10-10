@@ -9,11 +9,18 @@ import java.util.logging.Logger;
 
 public class ProgramUI {
     private static final Logger logger = Logger.getLogger(ProgramUI.class.getName());
+    private static final String LIMITED_RIGHTS_NOTE =
+            """
+                    Приложение запущено без прав администратора.
+                    Поверх окон с повышенными правами (консоль от админа,
+                    диспетчер задач) переключение работать не будет.""";
 
     private final Lifecycle lifecycle;
+    private final boolean hasFullPrivileges;
 
-    public ProgramUI(Lifecycle lifecycle) {
+    public ProgramUI(Lifecycle lifecycle, boolean hasFullPrivileges) {
         this.lifecycle = lifecycle;
+        this.hasFullPrivileges = hasFullPrivileges;
         setupSystemTray();
     }
 
@@ -31,7 +38,8 @@ public class ProgramUI {
 
             trayIcon.addActionListener(_ -> JOptionPane.showMessageDialog(null,
                     "Приложение работает в фоновом режиме.\n\n" +
-                            "Нажмите Caps Lock для переключения языка.",
+                            "Нажмите Caps Lock для переключения языка." +
+                            (hasFullPrivileges ? "" : "\n\n" + LIMITED_RIGHTS_NOTE),
                     "Caps Lock Switcher",
                     JOptionPane.INFORMATION_MESSAGE));
 
@@ -51,9 +59,13 @@ public class ProgramUI {
         aboutItem.addActionListener(_ -> JOptionPane.showMessageDialog(null,
                 "Capsyyyy. Программа для смены языка и не только(в будущем)\n\n" +
                         "Нажмите Caps Lock для переключения языка.\n" +
-                        "Caps Lock автоматически отключается(практически сразу и практически без багов).",
+                        "Сам Caps Lock при этом не срабатывает — нажатие поглощается.\n" +
+                        "Shift+Caps Lock включает капс как обычно.\n\n" +
+                        (hasFullPrivileges
+                                ? "Права администратора: есть, работает во всех окнах."
+                                : LIMITED_RIGHTS_NOTE),
                 "О программе",
-                JOptionPane.INFORMATION_MESSAGE));
+                hasFullPrivileges ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE));
         popup.add(aboutItem);
 
         MenuItem exitItem = new MenuItem("Выход");

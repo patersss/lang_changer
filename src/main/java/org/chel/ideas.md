@@ -5,4 +5,4 @@
 Добавлю интерфейсы и отдельный поток, который будет проверять время + новые пункты в меню трея
   - https://ochafik.com/p_98
   - https://www.quora.com/Is-it-possible-to-create-a-desktop-program-with-Java-to-track-if-a-user-is-not-having-activity-on-the-PC-even-when-outside-the-program-I-need-to-track-if-people-are-not-working-on-the-PC-but-just-having-side-bar
-  - https://stackoverflow.com/questions/2777594/java-checking-if-pc-is-idle
+  - https://stackoverflow.com/questions/2777594/java-checking-if-pc-is-idle9ё

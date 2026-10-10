@@ -13,9 +13,4 @@ public interface Win32Keyboard {
      * @return количество событий, принятых системой (ожидается {@code virtualKeys.size() * 2})
      */
     int sendKeyCombo(List<Integer> virtualKeys);
-
-    /**
-     * @return состояние переключателя (Caps Lock, Num Lock и т.п.)
-     */
-    boolean isToggleOn(int virtualKey);
 }
