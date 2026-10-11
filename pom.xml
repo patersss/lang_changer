@@ -6,7 +6,7 @@
 
     <groupId>org.chel</groupId>
     <artifactId>change_lang</artifactId>
-    <version>${revision</version>
+    <version>${revision}</version>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
