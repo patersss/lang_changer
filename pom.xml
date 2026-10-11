@@ -6,12 +6,13 @@
 
     <groupId>org.chel</groupId>
     <artifactId>change_lang</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${revision</version>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <revision>0.0.0-dev</revision>
     </properties>
 
     <dependencies>
@@ -35,6 +36,23 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <!-- фильтруем только один файл, чтобы не испортить картинки, шрифты и т.п. -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>app.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>app.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

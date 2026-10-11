@@ -35,30 +35,26 @@ jobs:
         run: |
           choco install innosetup -y
 
+      - name: Resolve version
+        shell: powershell
+        run: |
+          $ver = "${{ github.ref_name }}" -replace '^v',''
+          "VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       - name: Build fat jar
         shell: powershell
         run: |
-          mvn -B -DskipTests package
+          mvn -B -DskipTests "-Drevision=$env:VERSION" package
           dir target
 
       - name: Package with jpackage
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
-          $tag = "${{ github.ref_name }}"          
-          $ver = $tag -replace '^v',''
-          $refType = "${{ github.ref_type }}"   # "tag" или "branch"
-          $refName = "${{ github.ref_name }}"   # "v1.0.0" или "main"
-          
-          if ($refType -eq "tag") { `
-          $ver = ($refName -replace '^v','') `
-          } else { `
-            $ver = "1.0.0" `
-          }
           
           jpackage --type $env:JPACKAGE_TYPE `
             --name $env:APP_NAME `
-            --app-version $ver `
+            --app-version $env:VERSION `
             --input target `
             --main-jar "$env:JAR_NAME.jar" `
             --main-class $env:MAIN_CLASS `
@@ -68,8 +64,7 @@ jobs:
           
           $out = Get-ChildItem dist\*.exe | Select-Object -First 1
           if (-not $out) { throw "Installer not found" }
-          $newName = "$env:APP_NAME-$tag.exe"
-          Move-Item $out.FullName (Join-Path dist $newName) -Force
+          Move-Item $out.FullName (Join-Path dist "$env:APP_NAME-${{ github.ref_name }}.exe") -Force
 
       - name: Upload to releases
         uses: svenstaro/upload-release-action@v2

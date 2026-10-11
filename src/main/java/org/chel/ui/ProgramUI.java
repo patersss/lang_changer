@@ -55,17 +55,7 @@ public class ProgramUI {
     private TrayIcon getTrayIcon(Image icon) {
         PopupMenu popup = new PopupMenu();
 
-        MenuItem aboutItem = new MenuItem("О программе");
-        aboutItem.addActionListener(_ -> JOptionPane.showMessageDialog(null,
-                "Capsyyyy. Программа для смены языка и не только(в будущем)\n\n" +
-                        "Нажмите Caps Lock для переключения языка.\n" +
-                        "Сам Caps Lock при этом не срабатывает — нажатие поглощается.\n" +
-                        "Shift+Caps Lock включает капс как обычно.\n\n" +
-                        (hasFullPrivileges
-                                ? "Права администратора: есть, работает во всех окнах."
-                                : LIMITED_RIGHTS_NOTE),
-                "О программе",
-                hasFullPrivileges ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE));
+        MenuItem aboutItem = getAboutMenuItem();
         popup.add(aboutItem);
 
         MenuItem exitItem = new MenuItem("Выход");
@@ -79,6 +69,21 @@ public class ProgramUI {
         TrayIcon trayIcon = new TrayIcon(icon, "Caps Lock Language Switcher", popup);
         trayIcon.setImageAutoSize(true);
         return trayIcon;
+    }
+
+    private MenuItem getAboutMenuItem() {
+        MenuItem aboutItem = new MenuItem("О программе");
+        aboutItem.addActionListener(_ -> JOptionPane.showMessageDialog(null,
+                "Capsyyyy(версия " + AppInfo.version + "). Программа для смены языка и не только(в будущем)\n\n" +
+                        "Нажмите Caps Lock для переключения языка.\n" +
+                        "Сам Caps Lock при этом не срабатывает — нажатие поглощается.\n" +
+                        "Shift+Caps Lock включает капс как обычно.\n\n" +
+                        (hasFullPrivileges
+                                ? "Права администратора: есть, работает во всех окнах."
+                                : LIMITED_RIGHTS_NOTE),
+                "О программе",
+                hasFullPrivileges ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE));
+        return aboutItem;
     }
 
     private Image createTrayIcon() {
